@@ -1,0 +1,192 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema Quiz
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema Quiz
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `Quiz` DEFAULT CHARACTER SET utf8 ;
+USE `Quiz` ;
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`User`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`User` (
+  `idUsuario` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `senha` VARCHAR(45) NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  `img` VARCHAR(45) NULL,
+  `adm` TINYINT NOT NULL,
+  PRIMARY KEY (`idUsuario`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Category` (
+  `idCategorias` INT NOT NULL,
+  `nomeCat` VARCHAR(45) NOT NULL,
+  `IdPergunta` INT NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idCategorias`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Question`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Question` (
+  `idPergunta` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(45) NOT NULL,
+  `Categoria_idCategorias` INT NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idPergunta`),
+  INDEX `fk_Pergunta_Categoria_idx` (`Categoria_idCategorias` ASC),
+  CONSTRAINT `fk_Pergunta_Categoria`
+    FOREIGN KEY (`Categoria_idCategorias`)
+    REFERENCES `Quiz`.`Category` (`idCategorias`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Alternative`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Alternative` (
+  `idAlternativas` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(45) NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idAlternativas`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Ranking`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Ranking` (
+  `idRanking` INT NOT NULL AUTO_INCREMENT,
+  `pontuacao` INT NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idRanking`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Answer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Answer` (
+  `idRespostas` INT NOT NULL AUTO_INCREMENT,
+  `created_at` VARCHAR(45) NOT NULL,
+  `Answercol` VARCHAR(45) NULL,
+  PRIMARY KEY (`idRespostas`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Quiz`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Quiz` (
+  `idquiz` INT NOT NULL AUTO_INCREMENT,
+  `Usuario_idUsuario` INT NOT NULL,
+  `titulo` VARCHAR(45) NOT NULL,
+  `resumo` VARCHAR(45) NULL,
+  `tipo` VARCHAR(45) NOT NULL,
+  `score` VARCHAR(45) NOT NULL,
+  `publish` VARCHAR(45) NOT NULL,
+  `created_at` VARCHAR(45) NOT NULL,
+  `Ranking_idRanking` INT NOT NULL,
+  PRIMARY KEY (`idquiz`),
+  INDEX `fk_quiz_Usuario1_idx` (`Usuario_idUsuario` ASC),
+  INDEX `fk_quiz_Ranking1_idx` (`Ranking_idRanking` ASC),
+  CONSTRAINT `fk_quiz_Usuario1`
+    FOREIGN KEY (`Usuario_idUsuario`)
+    REFERENCES `Quiz`.`User` (`idUsuario`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_quiz_Ranking1`
+    FOREIGN KEY (`Ranking_idRanking`)
+    REFERENCES `Quiz`.`Ranking` (`idRanking`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Question_has_Alternative`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Question_has_Alternative` (
+  `Pergunta_idPergunta` INT NOT NULL,
+  `Alternativa_idAlternativas` INT NOT NULL,
+  PRIMARY KEY (`Pergunta_idPergunta`, `Alternativa_idAlternativas`),
+  INDEX `fk_Pergunta_has_Alternativa_Alternativa1_idx` (`Alternativa_idAlternativas` ASC),
+  INDEX `fk_Pergunta_has_Alternativa_Pergunta1_idx` (`Pergunta_idPergunta` ASC),
+  CONSTRAINT `fk_Pergunta_has_Alternativa_Pergunta1`
+    FOREIGN KEY (`Pergunta_idPergunta`)
+    REFERENCES `Quiz`.`Question` (`idPergunta`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Pergunta_has_Alternativa_Alternativa1`
+    FOREIGN KEY (`Alternativa_idAlternativas`)
+    REFERENCES `Quiz`.`Alternative` (`idAlternativas`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Alternative_has_Answer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Alternative_has_Answer` (
+  `Alternativa_idAlternativas` INT NOT NULL,
+  `RespostaCerta_idRespostas` INT NOT NULL,
+  PRIMARY KEY (`Alternativa_idAlternativas`, `RespostaCerta_idRespostas`),
+  INDEX `fk_Alternativa_has_RespostaCerta_RespostaCerta1_idx` (`RespostaCerta_idRespostas` ASC),
+  INDEX `fk_Alternativa_has_RespostaCerta_Alternativa1_idx` (`Alternativa_idAlternativas` ASC),
+  CONSTRAINT `fk_Alternativa_has_RespostaCerta_Alternativa1`
+    FOREIGN KEY (`Alternativa_idAlternativas`)
+    REFERENCES `Quiz`.`Alternative` (`idAlternativas`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_Alternativa_has_RespostaCerta_RespostaCerta1`
+    FOREIGN KEY (`RespostaCerta_idRespostas`)
+    REFERENCES `Quiz`.`Answer` (`idRespostas`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Quiz`.`Quiz_has_Question`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Quiz`.`Quiz_has_Question` (
+  `quiz_idquiz` INT NOT NULL,
+  `Pergunta_idPergunta` INT NOT NULL,
+  PRIMARY KEY (`quiz_idquiz`, `Pergunta_idPergunta`),
+  INDEX `fk_quiz_has_Pergunta_Pergunta1_idx` (`Pergunta_idPergunta` ASC),
+  INDEX `fk_quiz_has_Pergunta_quiz1_idx` (`quiz_idquiz` ASC),
+  CONSTRAINT `fk_quiz_has_Pergunta_quiz1`
+    FOREIGN KEY (`quiz_idquiz`)
+    REFERENCES `Quiz`.`Quiz` (`idquiz`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_quiz_has_Pergunta_Pergunta1`
+    FOREIGN KEY (`Pergunta_idPergunta`)
+    REFERENCES `Quiz`.`Question` (`idPergunta`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

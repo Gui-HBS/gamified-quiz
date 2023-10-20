@@ -1,0 +1,18 @@
+.tela1 {
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    border: 5px solid black;
+}
+
+/*barra  de navegação*/
+header, .navbar{
+    background-color: rgb(135,206,250);
+}
+
+#navcontainer{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+ 
